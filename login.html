@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Academic Planner</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f6fb;--card:#fff;--tx:#1e2433;--mut:#6b7280;--bd:#e5e7eb;--pri:#4f46e5;--pri2:#eef2ff;
+--red:#dc2626;--redb:#fee2e2;--yel:#b45309;--yelb:#fef3c7;--grn:#15803d;--grnb:#dcfce7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#1a1e30;--tx:#e8eaf3;--mut:#9aa1b5;--bd:#2c3250;--pri:#818cf8;--pri2:#252b52;
+--red:#f87171;--redb:#4a1d24;--yel:#fbbf24;--yelb:#47340f;--grn:#4ade80;--grnb:#14391f}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:700;color:var(--pri);margin-right:auto;font-size:17px}
+nav a{padding:7px 14px;border-radius:8px;color:var(--mut);text-decoration:none;font-weight:500;cursor:pointer}
+nav a.on{background:var(--pri2);color:var(--pri)}
+.bellw{position:relative}
+.bell{background:none;border:0;font-size:20px;cursor:pointer;position:relative;padding:4px 8px;color:var(--tx)}
+.badge{position:absolute;top:-2px;right:0;background:var(--red);color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:700}
+.drop{display:none;position:absolute;right:0;top:40px;width:320px;max-width:88vw;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 30px #0003;padding:8px;max-height:70vh;overflow:auto}
+.drop.open{display:block}
+.drop h4{margin:6px 8px;font-size:13px;color:var(--mut)}
+.ni{padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.ni:hover{background:var(--pri2)}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+h2{margin:0 0 14px;font-size:22px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 150px}
+label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:160px;resize:vertical}
+button.b{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.g{background:var(--pri2);color:var(--pri)}
+button.d{background:var(--redb);color:var(--red)}
+button.s{padding:5px 10px;font-size:13px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-h b{font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dn{text-align:center;font-size:12px;font-weight:600;color:var(--mut);padding:4px 0}
+.day{min-height:78px;border:1px solid var(--bd);border-radius:8px;padding:4px;cursor:pointer;background:var(--card);overflow:hidden}
+.day:hover{border-color:var(--pri)}
+.day.out{opacity:.35}
+.day.today{border:2px solid var(--pri);background:var(--pri2)}
+.day .n{font-size:12px;font-weight:600}
+.chip{display:block;font-size:10px;background:var(--pri);color:#fff;border-radius:4px;padding:0 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{font-size:10px;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);font-size:14px}
+th{font-size:12px;color:var(--mut);text-transform:uppercase}
+.tbl{overflow-x:auto}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.red{background:var(--redb);color:var(--red)}.yel{background:var(--yelb);color:var(--yel)}.grn{background:var(--grnb);color:var(--grn)}.gry{background:var(--bd);color:var(--mut)}
+.task{display:flex;gap:12px;align-items:center;border-left:5px solid var(--bd);padding:10px 12px;margin-bottom:8px;background:var(--card);border-radius:10px;border-top:1px solid var(--bd);border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.task.red{border-left-color:var(--red)}.task.yel{border-left-color:var(--yel)}.task.grn{border-left-color:var(--grn)}
+.task .i{flex:1;min-width:0}.task.done .t{text-decoration:line-through;opacity:.55}
+.task input[type=checkbox]{width:20px;height:20px}
+.mut{color:var(--mut);font-size:13px}
+.ov{position:fixed;inset:0;background:#0008;z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:520px;max-height:88vh;overflow:auto}
+.modal h3{margin:0 0 4px}
+.li{padding:12px;border:1px solid var(--bd);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.li:hover{border-color:var(--pri);background:var(--pri2)}
+.hide{display:none}
+@media(max-width:600px){.day{min-height:56px}.chip{font-size:9px}}
+</style>
+<style>
+.wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.auth{width:100%;max-width:400px;padding:24px}
+.tabs{display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:10px;margin:14px 0}
+.tabs button{flex:1;border:0;background:none;padding:8px;border-radius:8px;font:inherit;font-weight:600;color:var(--mut);cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--pri);box-shadow:0 1px 3px #0002}
+.f{margin-bottom:12px}
+.err{background:var(--redb);color:var(--red);padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:14px}
+form button{width:100%}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card auth">
+  <h2 style="text-align:center;margin:0">🎓 Academic Planner</h2>
+  <div class="tabs">
+    <button id="tl" class="on" type="button" onclick="tab('login')">Masuk</button>
+    <button id="tr" type="button" onclick="tab('reg')">Daftar</button>
+  </div>
+  <div id="err" class="err hide" role="alert"></div>
+
+  <form id="fl">
+    <div class="f"><label for="l_e">Email</label><input id="l_e" type="email" autocomplete="username" required></div>
+    <div class="f"><label for="l_p">Password</label><input id="l_p" type="password" autocomplete="current-password" required></div>
+    <button class="b" type="submit">Masuk</button>
+    <p class="mut" style="text-align:center">Akun demo: demo@kampus.ac.id / password</p>
+  </form>
+
+  <form id="fr" class="hide">
+    <div class="f"><label for="r_n">Nama</label><input id="r_n" autocomplete="name" required></div>
+    <div class="f"><label for="r_e">Email</label><input id="r_e" type="email" autocomplete="username" required></div>
+    <div class="f"><label for="r_p">Password (min. 8 karakter)</label><input id="r_p" type="password" minlength="8" autocomplete="new-password" required></div>
+    <div class="f"><label for="r_c">Ulangi Password</label><input id="r_c" type="password" autocomplete="new-password" required></div>
+    <button class="b" type="submit">Buat Akun</button>
+  </form>
+</div></div>
+
+<script src="js/api.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+function err(m){$('err').textContent=m||'';$('err').classList.toggle('hide',!m)}
+function tab(t){
+  const login=t==='login';
+  $('fl').classList.toggle('hide',!login);$('fr').classList.toggle('hide',login);
+  $('tl').classList.toggle('on',login);$('tr').classList.toggle('on',!login);err('');
+}
+async function submit(fn,btn){
+  btn.disabled=true;err('');
+  try{await fn();location.href='index.html'}
+  catch(e){err(e.message)}
+  finally{btn.disabled=false}
+}
+$('fl').addEventListener('submit',e=>{e.preventDefault();
+  submit(()=>API.auth.login({email:$('l_e').value,password:$('l_p').value}),e.submitter||e.target.querySelector('button'))});
+$('fr').addEventListener('submit',e=>{e.preventDefault();
+  if($('r_p').value!==$('r_c').value){err('Password dan konfirmasi tidak sama');return}
+  submit(()=>API.auth.register({nama:$('r_n').value,email:$('r_e').value,password:$('r_p').value}),e.submitter||e.target.querySelector('button'))});
+// sudah login? langsung ke aplikasi
+API.auth.me().then(()=>location.href='index.html').catch(()=>{});
+</script>
+</body>
+</html>

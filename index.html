@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Academic Planner</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f6fb;--card:#fff;--tx:#1e2433;--mut:#6b7280;--bd:#e5e7eb;--pri:#4f46e5;--pri2:#eef2ff;
+--red:#dc2626;--redb:#fee2e2;--yel:#b45309;--yelb:#fef3c7;--grn:#15803d;--grnb:#dcfce7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#1a1e30;--tx:#e8eaf3;--mut:#9aa1b5;--bd:#2c3250;--pri:#818cf8;--pri2:#252b52;
+--red:#f87171;--redb:#4a1d24;--yel:#fbbf24;--yelb:#47340f;--grn:#4ade80;--grnb:#14391f}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:700;color:var(--pri);margin-right:auto;font-size:17px}
+nav a{padding:7px 14px;border-radius:8px;color:var(--mut);text-decoration:none;font-weight:500;cursor:pointer}
+nav a.on{background:var(--pri2);color:var(--pri)}
+.bellw{position:relative}
+.bell{background:none;border:0;font-size:20px;cursor:pointer;position:relative;padding:4px 8px;color:var(--tx)}
+.badge{position:absolute;top:-2px;right:0;background:var(--red);color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:700}
+.drop{display:none;position:absolute;right:0;top:40px;width:320px;max-width:88vw;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 30px #0003;padding:8px;max-height:70vh;overflow:auto}
+.drop.open{display:block}
+.drop h4{margin:6px 8px;font-size:13px;color:var(--mut)}
+.ni{padding:8px 10px;border-radius:8px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.ni:hover{background:var(--pri2)}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+h2{margin:0 0 14px;font-size:22px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 150px}
+label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:160px;resize:vertical}
+button.b{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.g{background:var(--pri2);color:var(--pri)}
+button.d{background:var(--redb);color:var(--red)}
+button.s{padding:5px 10px;font-size:13px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-h b{font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dn{text-align:center;font-size:12px;font-weight:600;color:var(--mut);padding:4px 0}
+.day{min-height:78px;border:1px solid var(--bd);border-radius:8px;padding:4px;cursor:pointer;background:var(--card);overflow:hidden}
+.day:hover{border-color:var(--pri)}
+.day.out{opacity:.35}
+.day.today{border:2px solid var(--pri);background:var(--pri2)}
+.day .n{font-size:12px;font-weight:600}
+.chip{display:block;font-size:10px;background:var(--pri);color:#fff;border-radius:4px;padding:0 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{font-size:10px;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);font-size:14px}
+th{font-size:12px;color:var(--mut);text-transform:uppercase}
+.tbl{overflow-x:auto}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.red{background:var(--redb);color:var(--red)}.yel{background:var(--yelb);color:var(--yel)}.grn{background:var(--grnb);color:var(--grn)}.gry{background:var(--bd);color:var(--mut)}
+.task{display:flex;gap:12px;align-items:center;border-left:5px solid var(--bd);padding:10px 12px;margin-bottom:8px;background:var(--card);border-radius:10px;border-top:1px solid var(--bd);border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.task.red{border-left-color:var(--red)}.task.yel{border-left-color:var(--yel)}.task.grn{border-left-color:var(--grn)}
+.task .i{flex:1;min-width:0}.task.done .t{text-decoration:line-through;opacity:.55}
+.task input[type=checkbox]{width:20px;height:20px}
+.mut{color:var(--mut);font-size:13px}
+.ov{position:fixed;inset:0;background:#0008;z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:520px;max-height:88vh;overflow:auto}
+.modal h3{margin:0 0 4px}
+.li{padding:12px;border:1px solid var(--bd);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.li:hover{border-color:var(--pri);background:var(--pri2)}
+.hide{display:none}
+@media(max-width:600px){.day{min-height:56px}.chip{font-size:9px}}
+</style>
+</head>
+<body>
+<nav>
+  <span class="logo">🎓 Academic Planner</span>
+  <a data-p="dashboard" href="#dashboard">Dashboard</a>
+  <a data-p="courses" href="#courses">Courses</a>
+  <a data-p="tasks" href="#tasks">Tasks</a>
+  <span class="mut" id="usr"></span><button class="b g s" onclick="logout()">Keluar</button>
+  <div class="bellw">
+    <button class="bell" id="bell" aria-label="Notifikasi">🔔<span class="badge" id="badge"></span></button>
+    <div class="drop" id="drop"></div>
+  </div>
+</nav>
+<main id="app"></main>
+<div class="ov" id="ov"><div class="modal" id="modal"></div></div>
+
+<script src="js/api.js"></script>
+<script>
+const HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=new Date();today.setHours(0,0,0,0);
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const fmt=s=>{const d=parse(s);return d.getDate()+' '+BULAN[d.getMonth()].slice(0,3)+' '+d.getFullYear()};
+const $=id=>document.getElementById(id);
+const LOADING='<p class="mut">Memuat data…</p>';
+
+/* Warna & label deadline: nilai 'alert' dan 'sisa_hari' dihitung oleh server (tasks.php) */
+const CLS={merah:'red',kuning:'yel',hijau:'grn',netral:'gry',selesai:'gry'};
+function label(t){
+  if(t.status==='Selesai')return'Selesai';
+  const d=Number(t.sisa_hari);
+  return d<0?'Terlambat '+(-d)+' hari':d===0?'Hari ini':'H-'+d;
+}
+
+let cur={m:today.getMonth(),y:today.getFullYear()},editId=null,editTid=null,taskCache=[],byDate={};
+
+async function guard(fn){try{return await fn()}catch(e){alert(e.message||e)}}
+function fail(e){
+  app.innerHTML=`<div class="card"><b>Gagal memuat data</b><p class="mut">${esc(e.message)}</p>
+  <p class="mut">Pastikan Apache &amp; MySQL aktif, <code>schema.sql</code> sudah di-import, dan halaman dibuka lewat <code>http://localhost/...</code> (bukan file://).</p></div>`;
+}
+
+/* ===== ROUTER ===== */
+async function route(){
+  const p=(location.hash||'#dashboard').slice(1);
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===p));
+  app.innerHTML=LOADING;
+  try{await ({dashboard:rDash,courses:rCourses,tasks:rTasks}[p]||rDash)()}catch(e){fail(e)}
+  rBell();
+}
+addEventListener('hashchange',()=>{editId=null;editTid=null;route()});
+
+/* ===== DASHBOARD ===== */
+async function rDash(){
+  const first=new Date(cur.y,cur.m,1),start=addDays(first,-first.getDay()),end=addDays(start,41);
+  const rows=await API.calendar(ymd(start),ymd(end));
+  byDate={};rows.forEach(r=>(byDate[r.tanggal]??=[]).push(r));
+  let h=`<h2>Dashboard</h2><div class="card"><div class="cal-h">
+    <button class="b g s" onclick="mon(-1)">‹ Sebelumnya</button><b>${BULAN[cur.m]} ${cur.y}</b>
+    <button class="b g s" onclick="mon(1)">Berikutnya ›</button></div><div class="grid">`;
+  HARI.forEach(x=>h+=`<div class="dn">${x.slice(0,3)}</div>`);
+  for(let i=0;i<42;i++){
+    const d=addDays(start,i),ds=ymd(d),L=byDate[ds]||[];
+    h+=`<div class="day${d.getMonth()!==cur.m?' out':''}${ds===ymd(today)?' today':''}" onclick="openDay('${ds}')"><div class="n">${d.getDate()}</div>`;
+    L.slice(0,2).forEach(x=>h+=`<span class="chip">${esc(x.nama_matkul)}</span>`);
+    if(L.length>2)h+=`<span class="more">+${L.length-2} lagi</span>`;
+    h+='</div>';
+  }
+  app.innerHTML=h+`</div></div><p class="mut">Klik tanggal untuk melihat mata kuliah dan mencatat Lecture Notes.</p>`;
+}
+function mon(n){cur.m+=n;if(cur.m<0){cur.m=11;cur.y--}if(cur.m>11){cur.m=0;cur.y++}app.innerHTML=LOADING;rDash().catch(fail)}
+
+function openDay(ds){
+  const d=parse(ds),L=byDate[ds]||[];
+  let h=`<h3>${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}</h3><p class="mut">Mata kuliah hari ini</p>`;
+  if(!L.length)h+='<p class="mut">Tidak ada jadwal kuliah.</p>';
+  L.forEach(x=>h+=`<div class="li" onclick="openNote('${ds}',${x.session_id})"><b>${esc(x.nama_matkul)}</b>
+    <div class="mut">🕒 ${esc(x.jam.slice(0,5))} · 📍 ${esc(x.ruangan)} · ${esc(x.dosen)} · Pertemuan ${x.pertemuan_ke}/16</div>
+    ${x.has_note?'<span class="pill grn">Ada catatan</span>':''}</div>`);
+  show(h+`<button class="b g" onclick="closeM()">Tutup</button>`);
+}
+async function openNote(ds,sid){
+  const r=(byDate[ds]||[]).find(x=>x.session_id==sid);
+  const n=await guard(()=>API.notes.get(sid));if(!n)return;
+  show(`<h3>📝 Lecture Notes</h3><p class="mut">${esc(r.nama_matkul)} · ${fmt(ds)} · Pertemuan ${r.pertemuan_ke}</p>
+   <textarea id="nt" placeholder="Tulis catatan perkuliahan di sini...">${esc(n.isi_catatan)}</textarea>
+   <p id="ok" class="mut" style="color:var(--grn)"></p>
+   <div class="row"><button class="b" onclick="saveNote('${ds}',${sid})">Save Notes</button>
+   <button class="b g" onclick="openDay('${ds}')">‹ Kembali</button></div>`);
+}
+async function saveNote(ds,sid){
+  const v=$('nt').value;
+  if(await guard(()=>API.notes.save(sid,v))){
+    const r=byDate[ds].find(x=>x.session_id==sid);r.has_note=v.trim()!=='';
+    $('ok').textContent='✓ Catatan tersimpan di database';
+  }
+}
+function show(h){$('modal').innerHTML=h;ov.classList.add('open')}
+function closeM(){ov.classList.remove('open')}
+ov.addEventListener('click',e=>{if(e.target===ov)closeM()});
+
+/* ===== COURSES ===== */
+async function rCourses(){
+  const C=await API.courses.list();
+  const e=C.find(c=>c.id==editId)||{kode_matkul:'',nama_matkul:'',dosen:'',hari:'Senin',jam:'08:00',ruangan:'',tanggal_mulai:ymd(today)};
+  const days=HARI.slice(1).concat('Minggu');
+  let h=`<h2>Mata Kuliah</h2><div class="card"><b>${editId?'Edit':'Tambah'} Mata Kuliah</b><div class="row" style="margin-top:10px">
+   <div><label>Kode</label><input id="f_kode" value="${esc(e.kode_matkul)}"></div>
+   <div style="flex:2 1 220px"><label>Nama Mata Kuliah</label><input id="f_nama" value="${esc(e.nama_matkul)}"></div>
+   <div><label>Dosen</label><input id="f_dosen" value="${esc(e.dosen)}"></div></div>
+   <div class="row" style="margin-top:10px">
+   <div><label>Hari</label><select id="f_hari">${days.map(x=>`<option${x===e.hari?' selected':''}>${x}</option>`).join('')}</select></div>
+   <div><label>Jam</label><input type="time" id="f_jam" value="${e.jam.slice(0,5)}"></div>
+   <div><label>Ruangan</label><input id="f_ruang" value="${esc(e.ruangan)}"></div>
+   <div><label>Mulai Semester</label><input type="date" id="f_mulai" value="${e.tanggal_mulai}"></div></div>
+   <p class="mut">✨ Server otomatis membuat 16 pertemuan mingguan (1 semester) di database.</p>
+   <button class="b" onclick="saveCourse()">${editId?'Simpan Perubahan':'Tambah & Generate Jadwal'}</button>
+   ${editId?'<button class="b g" onclick="editId=null;route()">Batal</button>':''}</div>
+   <div class="card tbl"><table><tr><th>Kode</th><th>Matkul</th><th>Dosen</th><th>Jadwal</th><th>Pertemuan</th><th></th></tr>`;
+  C.forEach(c=>{
+    h+=`<tr><td>${esc(c.kode_matkul)}</td><td><b>${esc(c.nama_matkul)}</b></td><td>${esc(c.dosen)}</td>
+    <td>${c.hari}, ${c.jam.slice(0,5)}<br><span class="mut">${esc(c.ruangan)}</span></td>
+    <td class="mut">${fmt(c.pertemuan_pertama)} → ${fmt(c.pertemuan_terakhir)}</td>
+    <td><button class="b g s" onclick="editId=${c.id};route();scrollTo(0,0)">Edit</button> <button class="b d s" onclick="delCourse(${c.id})">Hapus</button></td></tr>`});
+  if(!C.length)h+='<tr><td colspan="6" class="mut">Belum ada mata kuliah.</td></tr>';
+  app.innerHTML=h+'</table></div>';
+}
+async function saveCourse(){
+  const o={kode_matkul:$('f_kode').value,nama_matkul:$('f_nama').value,dosen:$('f_dosen').value,hari:$('f_hari').value,jam:$('f_jam').value,ruangan:$('f_ruang').value,tanggal_mulai:$('f_mulai').value};
+  if(!o.nama_matkul.trim()||!o.tanggal_mulai||!o.jam){alert('Nama mata kuliah, jam, dan tanggal mulai wajib diisi.');return}
+  const r=await guard(()=>editId?API.courses.update(editId,o):API.courses.create(o));
+  if(r){editId=null;route()}
+}
+async function delCourse(id){
+  if(!confirm('Hapus mata kuliah ini beserta jadwal, catatan, dan tugas terkait?'))return;
+  if(await guard(()=>API.courses.remove(id)))route();
+}
+
+/* ===== TASKS ===== */
+async function rTasks(){
+  const [L,C]=await Promise.all([API.tasks.list(),API.courses.list()]);
+  taskCache=L;
+  const e=L.find(t=>t.id==editTid)||{judul_tugas:'',course_id:null,deadline:ymd(addDays(today,7)),prioritas:'Sedang',deskripsi:''};
+  let h=`<h2>Tugas Kuliah</h2><div class="card"><b>${editTid?'Edit':'Tambah'} Tugas</b><div class="row" style="margin-top:10px">
+   <div style="flex:2 1 220px"><label>Judul Tugas</label><input id="t_j" value="${esc(e.judul_tugas)}"></div>
+   <div><label>Mata Kuliah</label><select id="t_c">${C.map(c=>`<option value="${c.id}"${c.id==e.course_id?' selected':''}>${esc(c.nama_matkul)}</option>`).join('')}</select></div>
+   <div><label>Deadline</label><input type="date" id="t_d" value="${e.deadline}"></div>
+   <div><label>Prioritas</label><select id="t_p">${['Tinggi','Sedang','Rendah'].map(x=>`<option${x===e.prioritas?' selected':''}>${x}</option>`).join('')}</select></div></div>
+   <div style="margin:10px 0"><label>Deskripsi</label><input id="t_x" value="${esc(e.deskripsi)}"></div>
+   <button class="b" onclick="saveTask()">${editTid?'Simpan Perubahan':'Tambah Tugas'}</button>
+   ${editTid?'<button class="b g" onclick="editTid=null;route()">Batal</button>':''}</div>
+   <p class="mut">Warna: <span class="pill red">Merah H-1 / Overdue</span> <span class="pill yel">Kuning H-3</span> <span class="pill grn">Hijau H-7</span></p>`;
+  L.forEach(t=>{const c=CLS[t.alert]||'gry',done=t.status==='Selesai';
+    h+=`<div class="task ${c}${done?' done':''}">
+     <input type="checkbox" ${done?'checked':''} onchange="toggle(${t.id},this.checked)" aria-label="Selesai">
+     <div class="i"><div class="t"><b>${esc(t.judul_tugas)}</b></div>
+      <div class="mut">${esc(t.nama_matkul)} · ${fmt(t.deadline)} · Prioritas ${t.prioritas}${t.deskripsi?' · '+esc(t.deskripsi):''}</div></div>
+     <span class="pill ${c}">${label(t)}</span>
+     <button class="b g s" onclick="editTid=${t.id};route();scrollTo(0,0)">Edit</button>
+     <button class="b d s" onclick="delTask(${t.id})">✕</button></div>`});
+  if(!L.length)h+='<p class="mut">Belum ada tugas 🎉</p>';
+  app.innerHTML=h;
+}
+async function saveTask(){
+  if(!$('t_j').value.trim()||!$('t_c').value||!$('t_d').value){alert('Judul, mata kuliah, dan deadline wajib diisi (tambahkan mata kuliah dulu).');return}
+  const o={course_id:+$('t_c').value,judul_tugas:$('t_j').value,deskripsi:$('t_x').value,deadline:$('t_d').value,prioritas:$('t_p').value};
+  if(editTid)o.status=taskCache.find(t=>t.id==editTid).status;   // PUT = data penuh; pertahankan status saat ini
+  const r=await guard(()=>editTid?API.tasks.update(editTid,o):API.tasks.create(o));
+  if(r){editTid=null;route()}
+}
+async function toggle(id,on){if(await guard(()=>API.tasks.setStatus(id,on?'Selesai':'Belum Selesai')))route()}
+async function delTask(id){if(await guard(()=>API.tasks.remove(id)))route()}
+
+/* ===== NOTIFICATION BELL ===== */
+async function rBell(){
+  let U=[];
+  try{U=await API.tasks.upcoming(7)}catch(e){}
+  const urgent=U.filter(t=>Number(t.sisa_hari)<=3).length;
+  badge.textContent=urgent;badge.style.display=urgent?'block':'none';
+  drop.innerHTML='<h4>Deadline Mendatang</h4>'+(U.length?U.map(t=>
+    `<div class="ni"><div><b>${esc(t.judul_tugas)}</b><div class="mut">${esc(t.nama_matkul)} · ${fmt(t.deadline)}</div></div><span class="pill ${CLS[t.alert]}">${label(t)}</span></div>`).join('')
+    :'<div class="ni mut">Tidak ada deadline dalam 7 hari 👍</div>')
+   +'<div class="ni"><a href="#tasks" onclick="drop.classList.remove(\'open\')" style="color:var(--pri);font-size:13px">Lihat semua tugas →</a></div>';
+}
+bell.addEventListener('click',e=>{e.stopPropagation();drop.classList.toggle('open')});
+document.addEventListener('click',e=>{if(!drop.contains(e.target))drop.classList.remove('open')});
+
+async function logout(){try{await API.auth.logout()}catch(e){}location.href='login.html'}
+/* Mulai: pastikan sudah login, lalu tampilkan halaman */
+API.auth.me().then(u=>{$('usr').textContent='👤 '+u.nama;route()}).catch(()=>{location.href='login.html'});
+</script>
+</body>
+</html>
